@@ -1,0 +1,93 @@
+# .github/workflows/ci.yml
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-shell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: shell/package-lock.json
+      - name: Instalar dependências
+        run: npm ci
+        working-directory: shell
+      - name: Verificar tipos TypeScript
+        run: npm run typecheck
+        working-directory: shell
+      - name: Rodar testes unitários
+        run: npm run test:unit
+        working-directory: shell
+      - name: Rodar testes de integração
+        run: npm run test:integration
+        working-directory: shell
+
+  test-mf-analytics:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: mf-analytics/package-lock.json
+      - name: Instalar dependências
+        run: npm ci
+        working-directory: mf-analytics
+      - name: Verificar tipos TypeScript
+        run: npm run typecheck
+        working-directory: mf-analytics
+      - name: Rodar testes
+        run: npm test
+        working-directory: mf-analytics
+
+  test-mf-users:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: mf-users/package-lock.json
+      - name: Instalar dependências
+        run: npm ci
+        working-directory: mf-users
+      - name: Verificar tipos TypeScript
+        run: npm run typecheck
+        working-directory: mf-users
+      - name: Rodar testes
+        run: npm test
+        working-directory: mf-users
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [test-shell, test-mf-analytics, test-mf-users]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Build shell
+        run: npm ci && npm run build
+        working-directory: shell
+        env:
+          KEYCLOAK_URL: http://localhost:8080
+          KEYCLOAK_REALM: mf-dashboard
+          KEYCLOAK_CLIENT_ID: shell-client
+          KEYCLOAK_CLIENT_SECRET: shell-secret
+          NEXT_PUBLIC_BASE_URL: http://localhost:3000
+      - name: Build mf-analytics
+        run: npm ci && npm run build
+        working-directory: mf-analytics
+      - name: Build mf-users
+        run: npm ci && npm run build
+        working-directory: mf-users
