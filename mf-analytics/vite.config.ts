@@ -22,11 +22,19 @@ export default defineConfig({
     minify: false,
   },
   server: {
-    port: 3001,
-    cors: true,
+  port: 3001,
+  cors: true,
+  headers: {
+    'X-Frame-Options': 'ALLOWALL',
+    'Content-Security-Policy': "frame-ancestors *",
   },
-  preview: {
-    port: 3001,
-    cors: true,
+},
+preview: {
+  port: 3001,
+  cors: true,
+  headers: {
+    'X-Frame-Options': 'ALLOWALL',
+    'Content-Security-Policy': "frame-ancestors *",
   },
+},
 });

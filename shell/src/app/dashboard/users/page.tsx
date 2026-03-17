@@ -1,15 +1,17 @@
 'use client';
-// shell/src/app/dashboard/users/page.tsx
 import Box from '@mui/material/Box';
 import { Header } from '../../../components/Header';
-import { RemoteModule } from '../../../components/RemoteModule';
 
 export default function UsersPage() {
   return (
     <Box>
       <Header title="Gestão de Usuários" />
       <Box p={3}>
-        <RemoteModule module="mfUsers/Users" />
+        <iframe
+          src="http://localhost:3002"
+          style={{ width: '100%', height: '80vh', border: 'none', borderRadius: 12 }}
+          title="Usuários"
+        />
       </Box>
     </Box>
   );
