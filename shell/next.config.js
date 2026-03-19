@@ -35,6 +35,7 @@ const nextConfig = {
       new NextFederationPlugin({
         name: 'shell',
         filename: 'static/chunks/remoteEntry.js',
+        remoteType: 'module',
         remotes: {
           // URLs corretas para Vite micro-frontends
           mfUsers: `mfUsers@http://localhost:3002${remoteEntryPath}`,
