@@ -19,9 +19,17 @@ interface ErrorBoundaryState {
 
 type RemoteImporter = () => Promise<{ default: React.ComponentType<any> }>;
 
+function normalizeRemoteModule(mod: any): { default: React.ComponentType<any> } {
+  if (mod && typeof mod === 'object' && 'default' in mod && mod.default) {
+    return { default: mod.default };
+  }
+  return { default: mod };
+}
+
 const remoteImporters: Record<string, RemoteImporter> = {
-  'mfAnalytics/Analytics': () => import(/* @vite-ignore */ 'mfAnalytics/Analytics'),
-  'mfUsers/Users': () => import(/* @vite-ignore */ 'mfUsers/Users'),
+  'mfAnalytics/Analytics': () =>
+    import(/* @vite-ignore */ 'mfAnalytics/Analytics').then(normalizeRemoteModule),
+  'mfUsers/Users': () => import(/* @vite-ignore */ 'mfUsers/Users').then(normalizeRemoteModule),
 };
 
 export class RemoteErrorBoundary extends Component<
