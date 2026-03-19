@@ -17,6 +17,13 @@ interface ErrorBoundaryState {
   error?: Error;
 }
 
+type RemoteImporter = () => Promise<{ default: React.ComponentType<any> }>;
+
+const remoteImporters: Record<string, RemoteImporter> = {
+  'mfAnalytics/Analytics': () => import(/* @vite-ignore */ 'mfAnalytics/Analytics'),
+  'mfUsers/Users': () => import(/* @vite-ignore */ 'mfUsers/Users'),
+};
+
 export class RemoteErrorBoundary extends Component<
   { children: React.ReactNode; moduleName: string },
   ErrorBoundaryState
@@ -76,12 +83,15 @@ function LoadingSkeleton() {
 const moduleCache = new Map<string, React.LazyExoticComponent<React.ComponentType<unknown>>>();
 
 function getRemoteComponent(moduleName: string) {
+  const importer = remoteImporters[moduleName];
+  if (!importer) {
+    throw new Error(`Módulo remoto não mapeado: ${moduleName}`);
+  }
+
   if (!moduleCache.has(moduleName)) {
     const Component = lazy(() => {
       try {
-        // Usa o Module Federation do webpack
-        // @ts-ignore
-        return import(/* webpackChunkName: "remote-module" */ moduleName);
+        return importer();
       } catch (error) {
         console.error(`[RemoteModule] Falha ao carregar ${moduleName}:`, error);
         throw error;
@@ -93,6 +103,7 @@ function getRemoteComponent(moduleName: string) {
 }
 
 export function RemoteModule({ module: moduleName, fallback, ...props }: RemoteModuleProps) {
+  if (typeof window === 'undefined') return fallback ?? <LoadingSkeleton />;
   const RemoteComponent = getRemoteComponent(moduleName);
 
   return (
