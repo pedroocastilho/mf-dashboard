@@ -3,7 +3,7 @@ const { NextFederationPlugin } = require('@module-federation/nextjs-mf');
 process.env.NEXT_PRIVATE_LOCAL_WEBPACK = 'true';
 
 /** @type {import('next').NextConfig} */
-const remoteEntryPath = process.env.NODE_ENV === 'development' ? '/remoteEntry.js' : '/assets/remoteEntry.js';
+const remoteEntryPath = '/assets/remoteEntry.js';
 
 const nextConfig = {
   reactStrictMode: true,
