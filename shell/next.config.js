@@ -6,7 +6,7 @@ process.env.NEXT_PRIVATE_LOCAL_WEBPACK = 'true';
 const remoteEntryPath = '/assets/remoteEntry.js';
 
 function makeEsmRemote(remoteName, remoteEntryUrl) {
-  return `promise new Promise(async (resolve, reject) => {
+  return `promise new Promise(async (resolve) => {
     if (typeof window === 'undefined') {
       return resolve({
         get: () => Promise.resolve(() => ({})),
@@ -17,7 +17,10 @@ function makeEsmRemote(remoteName, remoteEntryUrl) {
       const remote = await import(/* webpackIgnore: true */ '${remoteEntryUrl}');
       resolve(remote);
     } catch (e) {
-      reject(e);
+      resolve({
+        get: () => Promise.reject(e),
+        init: () => {}
+      });
     }
   })`;
 }
