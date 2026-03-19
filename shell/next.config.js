@@ -3,6 +3,8 @@ const { NextFederationPlugin } = require('@module-federation/nextjs-mf');
 process.env.NEXT_PRIVATE_LOCAL_WEBPACK = 'true';
 
 /** @type {import('next').NextConfig} */
+const remoteEntryPath = process.env.NODE_ENV === 'development' ? '/remoteEntry.js' : '/assets/remoteEntry.js';
+
 const nextConfig = {
   reactStrictMode: true,
   webpack(config, { isServer }) {
@@ -35,8 +37,8 @@ const nextConfig = {
         filename: 'static/chunks/remoteEntry.js',
         remotes: {
           // URLs corretas para Vite micro-frontends
-          mfUsers: 'mfUsers@http://localhost:3002/assets/remoteEntry.js',
-          mfAnalytics: 'mfAnalytics@http://localhost:3001/assets/remoteEntry.js',
+          mfUsers: `mfUsers@http://localhost:3002${remoteEntryPath}`,
+          mfAnalytics: `mfAnalytics@http://localhost:3001${remoteEntryPath}`,
         },
         shared: {
           react: { singleton: true, requiredVersion: false },
