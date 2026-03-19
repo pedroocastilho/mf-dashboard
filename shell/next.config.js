@@ -5,6 +5,23 @@ process.env.NEXT_PRIVATE_LOCAL_WEBPACK = 'true';
 /** @type {import('next').NextConfig} */
 const remoteEntryPath = '/assets/remoteEntry.js';
 
+function makeEsmRemote(remoteName, remoteEntryUrl) {
+  return `promise new Promise(async (resolve, reject) => {
+    if (typeof window === 'undefined') {
+      return resolve({
+        get: () => Promise.resolve(() => ({})),
+        init: () => {}
+      });
+    }
+    try {
+      const remote = await import(/* webpackIgnore: true */ '${remoteEntryUrl}');
+      resolve(remote);
+    } catch (e) {
+      reject(e);
+    }
+  })`;
+}
+
 const nextConfig = {
   reactStrictMode: true,
   webpack(config, { isServer }) {
@@ -35,11 +52,10 @@ const nextConfig = {
       new NextFederationPlugin({
         name: 'shell',
         filename: 'static/chunks/remoteEntry.js',
-        remoteType: 'module',
         remotes: {
           // URLs corretas para Vite micro-frontends
-          mfUsers: `mfUsers@http://localhost:3002${remoteEntryPath}`,
-          mfAnalytics: `mfAnalytics@http://localhost:3001${remoteEntryPath}`,
+          mfUsers: makeEsmRemote('mfUsers', `http://localhost:3002${remoteEntryPath}`),
+          mfAnalytics: makeEsmRemote('mfAnalytics', `http://localhost:3001${remoteEntryPath}`),
         },
         shared: {
           react: { singleton: true, requiredVersion: false },
