@@ -149,10 +149,16 @@ export function UserForm({ open, user, onClose, onSubmit, isLoading }: UserFormP
         </DialogContent>
 
         <DialogActions sx={{ px: 3, pb: 3, gap: 1 }}>
-          <Button onClick={handleClose} color="inherit">
+          <Button key="cancel" onClick={handleClose} color="inherit">
             Cancelar
           </Button>
-          <Button type="submit" variant="contained" disabled={isLoading} sx={{ background: '#1E3A5F' }}>
+          <Button
+            key="submit"
+            type="submit"
+            variant="contained"
+            disabled={isLoading}
+            sx={{ background: '#1E3A5F' }}
+          >
             {isLoading ? 'Salvando...' : isEditing ? 'Salvar alterações' : 'Criar usuário'}
           </Button>
         </DialogActions>
