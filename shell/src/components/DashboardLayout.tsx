@@ -1,8 +1,8 @@
-// shell/src/app/dashboard/layout.tsx
+'use client';
 import Box from '@mui/material/Box';
-import { Sidebar } from '../../components/Sidebar';
+import { Sidebar } from './Sidebar';
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <Box display="flex" minHeight="100vh" sx={{ background: '#F5F7FA' }}>
       <Sidebar />

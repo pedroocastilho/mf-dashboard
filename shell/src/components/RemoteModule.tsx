@@ -1,5 +1,5 @@
-'use client';
 // shell/src/components/RemoteModule.tsx
+'use client';
 import React, { Suspense, Component, lazy } from 'react';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -7,7 +7,6 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 
 interface RemoteModuleProps {
-  /** Ex: 'mfAnalytics/Analytics' */
   module: string;
   fallback?: React.ReactNode;
   [key: string]: unknown;
@@ -18,7 +17,7 @@ interface ErrorBoundaryState {
   error?: Error;
 }
 
-class RemoteErrorBoundary extends Component<
+export class RemoteErrorBoundary extends Component<
   { children: React.ReactNode; moduleName: string },
   ErrorBoundaryState
 > {
@@ -64,13 +63,7 @@ class RemoteErrorBoundary extends Component<
 
 function LoadingSkeleton() {
   return (
-    <Box
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      minHeight={300}
-      gap={2}
-    >
+    <Box display="flex" alignItems="center" justifyContent="center" minHeight={300} gap={2}>
       <CircularProgress size={32} sx={{ color: '#2E75B6' }} />
       <Typography variant="body2" color="text.secondary">
         Carregando módulo...
@@ -79,18 +72,28 @@ function LoadingSkeleton() {
   );
 }
 
-/**
- * Carrega um micro-frontend remoto via Module Federation.
- * Usa lazy + Suspense para loading progressivo e ErrorBoundary para falhas de rede.
- */
+// Mapeamento de módulos do Module Federation
+const moduleCache = new Map<string, React.LazyExoticComponent<React.ComponentType<unknown>>>();
+
+function getRemoteComponent(moduleName: string) {
+  if (!moduleCache.has(moduleName)) {
+    const Component = lazy(() => {
+      try {
+        // Usa o Module Federation do webpack
+        // @ts-ignore
+        return import(/* webpackChunkName: "remote-module" */ moduleName);
+      } catch (error) {
+        console.error(`[RemoteModule] Falha ao carregar ${moduleName}:`, error);
+        throw error;
+      }
+    });
+    moduleCache.set(moduleName, Component);
+  }
+  return moduleCache.get(moduleName)!;
+}
+
 export function RemoteModule({ module: moduleName, fallback, ...props }: RemoteModuleProps) {
-  const RemoteComponent = lazy(() =>
-    // @ts-expect-error — Module Federation não tem tipos nativos no TypeScript
-    import(moduleName).catch((err: Error) => {
-      console.error(`[RemoteModule] Falha ao carregar ${moduleName}:`, err);
-      throw err;
-    })
-  );
+  const RemoteComponent = getRemoteComponent(moduleName);
 
   return (
     <RemoteErrorBoundary moduleName={moduleName}>

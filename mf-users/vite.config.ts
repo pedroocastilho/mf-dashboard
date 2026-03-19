@@ -10,22 +10,36 @@ export default defineConfig({
       name: 'mfUsers',
       filename: 'remoteEntry.js',
       exposes: {
-        // O shell importa via: import('mfUsers/Users')
-        './Users': './src/index.tsx',
+        './Users': './src/components/Users.tsx', // Ajuste o caminho correto
       },
-      shared: ['react', 'react-dom', 'zustand'],
+      shared: {
+        react: { singleton: true, requiredVersion: false },
+        'react-dom': { singleton: true, requiredVersion: false },
+        '@emotion/react': { singleton: true, requiredVersion: false },
+        '@emotion/styled': { singleton: true, requiredVersion: false },
+        '@mui/material': { singleton: true, requiredVersion: false },
+      },
     }),
   ],
   build: {
     target: 'esnext',
     minify: false,
+    rollupOptions: {
+      external: ['react', 'react-dom'],
+    },
   },
-  server: {
-    port: 3002,
+  server: { 
+    port: 3002, 
     cors: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    }
   },
-  preview: {
-    port: 3002,
+  preview: { 
+    port: 3002, 
     cors: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    }
   },
 });

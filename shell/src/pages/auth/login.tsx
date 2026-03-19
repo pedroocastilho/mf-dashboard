@@ -1,5 +1,4 @@
-// shell/src/app/auth/login/page.tsx
-import { buildLoginUrl } from '../../../lib/keycloak';
+import { buildLoginUrl } from '../../lib/keycloak';
 
 export default function LoginPage() {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000';

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 3001",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview --port 3001",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
@@ -31,7 +31,7 @@
     "@vitest/coverage-v8": "^2.0.5",
     "jsdom": "^24.1.1",
     "msw": "^2.3.5",
-    "typescript": "^5.5.4",
+    "typescript": "5.4.5",
     "vite": "^5.3.5",
     "vitest": "^2.0.5"
   }

@@ -10,31 +10,34 @@ export default defineConfig({
       name: 'mfAnalytics',
       filename: 'remoteEntry.js',
       exposes: {
-        // O shell importa via: import('mfAnalytics/Analytics')
         './Analytics': './src/index.tsx',
       },
-      // Bibliotecas singleton — mesma instância do shell
-      shared: ['react', 'react-dom', 'zustand'],
+      shared: {
+        react: { singleton: true, requiredVersion: false },
+        'react-dom': { singleton: true, requiredVersion: false },
+        'recharts': { singleton: true, requiredVersion: false },
+      },
     }),
   ],
   build: {
     target: 'esnext',
     minify: false,
+    rollupOptions: {
+      external: ['react', 'react-dom'],
+    },
   },
-  server: {
-  port: 3001,
-  cors: true,
-  headers: {
-    'X-Frame-Options': 'ALLOWALL',
-    'Content-Security-Policy': "frame-ancestors *",
+  server: { 
+    port: 3001, 
+    cors: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    }
   },
-},
-preview: {
-  port: 3001,
-  cors: true,
-  headers: {
-    'X-Frame-Options': 'ALLOWALL',
-    'Content-Security-Policy': "frame-ancestors *",
+  preview: { 
+    port: 3001, 
+    cors: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    }
   },
-},
 });

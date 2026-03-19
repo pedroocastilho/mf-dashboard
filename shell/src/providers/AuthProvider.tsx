@@ -27,5 +27,14 @@ export function AuthProvider({ accessToken, children }: AuthProviderProps) {
     clearAuth();
   }, [accessToken, setAuth, clearAuth]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const update = (state: unknown) => {
+      (window as any).__AUTH_STORE__ = state;
+    };
+    update(useAuthStore.getState());
+    return useAuthStore.subscribe(update);
+  }, []);
+
   return <>{children}</>;
 }

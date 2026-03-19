@@ -15,6 +15,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
 import type { User } from '../types';
+import { useEffect, useMemo } from 'react';
 
 const schema = z.object({
   nome:  z.string().min(2, 'Nome deve ter ao menos 2 caracteres'),
@@ -37,16 +38,26 @@ interface UserFormProps {
 export function UserForm({ open, user, onClose, onSubmit, isLoading }: UserFormProps) {
   const isEditing = !!user;
 
+  const defaultValues = useMemo<FormValues>(
+    () => ({
+      nome: user?.nome ?? '',
+      email: user?.email ?? '',
+      senha: '',
+      roles: user?.roles ?? ['viewer'],
+      status: user?.status ?? 'ativo',
+    }),
+    [user]
+  );
+
   const { register, control, handleSubmit, reset, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      nome:   user?.nome  ?? '',
-      email:  user?.email ?? '',
-      senha:  '',
-      roles:  user?.roles ?? ['viewer'],
-      status: user?.status ?? 'ativo',
-    },
+    defaultValues,
   });
+
+  useEffect(() => {
+    if (!open) return;
+    reset(defaultValues);
+  }, [defaultValues, open, reset]);
 
   const handleClose = () => {
     reset();

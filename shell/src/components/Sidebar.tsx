@@ -1,6 +1,6 @@
 'use client';
 // shell/src/components/Sidebar.tsx
-import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -23,7 +23,7 @@ const navItems = [
 ];
 
 export function Sidebar() {
-  const pathname = usePathname();
+  const { pathname } = useRouter();
 
   return (
     <Drawer

@@ -48,18 +48,21 @@ async function deleteUser(id: string): Promise<void> {
 
 // ── React Query Hooks ─────────────────────────────────────────────────────
 export function useUsers(page: number, limit: number, busca: string, status: string) {
+  const initialData: PaginatedUsers = {
+    data: MOCK_USERS.filter((u) =>
+      (!busca  || u.nome.toLowerCase().includes(busca.toLowerCase()) || u.email.toLowerCase().includes(busca.toLowerCase())) &&
+      (!status || status === 'todos' || u.status === status)
+    ).slice((page - 1) * limit, page * limit),
+    total: MOCK_USERS.length,
+    page,
+    limit,
+  };
+
   return useQuery({
     queryKey: ['users', page, limit, busca, status],
     queryFn: () => fetchUsers(page, limit, busca, status),
-    placeholderData: {
-      data:  MOCK_USERS.filter((u) =>
-        (!busca  || u.nome.toLowerCase().includes(busca.toLowerCase()) || u.email.toLowerCase().includes(busca.toLowerCase())) &&
-        (!status || status === 'todos' || u.status === status)
-      ).slice((page - 1) * limit, page * limit),
-      total: MOCK_USERS.length,
-      page,
-      limit,
-    },
+    retry: false,
+    initialData,
   });
 }
 
