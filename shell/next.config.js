@@ -6,6 +6,29 @@ process.env.NEXT_PRIVATE_LOCAL_WEBPACK = 'true';
 const nextConfig = {
   reactStrictMode: true,
   webpack(config, { isServer }) {
+    if (isServer) {
+      const originalExternals = config.externals;
+      const reactExternals = function reactExternals({ request }, callback) {
+        if (request && /^react($|\/)/.test(request)) {
+          return callback(null, `commonjs ${request}`);
+        }
+        callback();
+      };
+
+      if (Array.isArray(originalExternals)) {
+        config.externals = [...originalExternals, reactExternals];
+      } else if (typeof originalExternals === 'function') {
+        config.externals = [
+          async (ctx, cb) => originalExternals(ctx, cb),
+          reactExternals,
+        ];
+      } else if (originalExternals) {
+        config.externals = [originalExternals, reactExternals];
+      } else {
+        config.externals = [reactExternals];
+      }
+    }
+
     config.plugins.push(
       new NextFederationPlugin({
         name: 'shell',
@@ -16,8 +39,8 @@ const nextConfig = {
           mfAnalytics: 'mfAnalytics@http://localhost:3001/assets/remoteEntry.js',
         },
         shared: {
-          react: { singleton: true, eager: true, requiredVersion: false },
-          'react-dom': { singleton: true, eager: true, requiredVersion: false },
+          react: { singleton: true, requiredVersion: false },
+          'react-dom': { singleton: true, requiredVersion: false },
           '@emotion/react': { singleton: true, requiredVersion: false },
           '@emotion/styled': { singleton: true, requiredVersion: false },
           '@mui/material': { singleton: true, requiredVersion: false },
@@ -26,9 +49,6 @@ const nextConfig = {
     );
 
     return config;
-  },
-  experimental: {
-    esmExternals: false,
   },
 };
 
