@@ -66,11 +66,11 @@ export function UserForm({ open, user, onClose, onSubmit, isLoading }: UserFormP
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle sx={{ fontWeight: 700, color: '#1E3A5F' }}>
-        {isEditing ? 'Editar Usuário' : 'Novo Usuário'}
-      </DialogTitle>
-
       <form onSubmit={handleSubmit(onSubmit)}>
+        <DialogTitle sx={{ fontWeight: 700, color: '#1E3A5F' }}>
+          {isEditing ? 'Editar Usuário' : 'Novo Usuário'}
+        </DialogTitle>
+
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, pt: 1 }}>
           <TextField
             {...register('nome')}
