@@ -123,8 +123,8 @@ export function UserForm({ open, user, onClose, onSubmit, isLoading }: UserFormP
                     </Box>
                   )}
                 >
-                  <MenuItem value="admin">admin</MenuItem>
-                  <MenuItem value="viewer">viewer</MenuItem>
+                  <MenuItem key="admin" value="admin">admin</MenuItem>
+                  <MenuItem key="viewer" value="viewer">viewer</MenuItem>
                 </Select>
               </FormControl>
             )}
@@ -138,9 +138,9 @@ export function UserForm({ open, user, onClose, onSubmit, isLoading }: UserFormP
                 <FormControl fullWidth>
                   <InputLabel>Status</InputLabel>
                   <Select {...field} label="Status">
-                    <MenuItem value="ativo">Ativo</MenuItem>
-                    <MenuItem value="inativo">Inativo</MenuItem>
-                    <MenuItem value="pendente">Pendente</MenuItem>
+                    <MenuItem key="ativo" value="ativo">Ativo</MenuItem>
+                    <MenuItem key="inativo" value="inativo">Inativo</MenuItem>
+                    <MenuItem key="pendente" value="pendente">Pendente</MenuItem>
                   </Select>
                 </FormControl>
               )}
