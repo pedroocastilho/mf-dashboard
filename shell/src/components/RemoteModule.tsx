@@ -19,11 +19,20 @@ interface ErrorBoundaryState {
 
 type RemoteImporter = () => Promise<{ default: React.ComponentType<any> }>;
 
-function normalizeRemoteModule(mod: any): { default: React.ComponentType<any> } {
-  if (mod && typeof mod === 'object' && 'default' in mod && mod.default) {
-    return { default: mod.default };
+function unwrapDefault(mod: any) {
+  let current = mod;
+  for (let i = 0; i < 3; i++) {
+    if (current && typeof current === 'object' && 'default' in current) {
+      current = (current as any).default;
+      continue;
+    }
+    break;
   }
-  return { default: mod };
+  return current;
+}
+
+function normalizeRemoteModule(mod: any): { default: React.ComponentType<any> } {
+  return { default: unwrapDefault(mod) };
 }
 
 const remoteImporters: Record<string, RemoteImporter> = {
